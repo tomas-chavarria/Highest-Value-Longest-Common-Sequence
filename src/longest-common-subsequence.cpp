@@ -7,23 +7,26 @@
 
 using namespace std;
 
-// argc is the number of arguments, argv is an array of strings
 int main(int argc, char* argv[]) {
     // Default filename if no argument is provided
     string inputFileName = "../run-io/input.txt";
 
-    // Check if a filename was passed as an argument
+    // Handle command line arguments for the input file
     if (argc > 1) {
-        if (string(argv[1]).substr(0, 10) != "../run-io/") {
-            cout << "Please place file [" << string(argv[1]) << "] in the run-io folder and re-run." << endl;
+        string arg = argv[1];
+        // If the user didn't provide the path, prepend it
+        if (arg.find("../run-io/") == string::npos && arg.find("../") != string::npos) {
+            cout << "File must be in the ../run-io/ directory." << endl;
             return 1;
+        } else if (arg.find("../run-io/") == string::npos) {
+            inputFileName = "../run-io/" + arg;
         } else {
-            inputFileName = "../run-io/" + string(argv[1]);
+            inputFileName = arg;
         }
-        
         cout << "Using input file: " << inputFileName << endl;
     } else {
-        cout << "No file specified. Defaulting to input.txt" << endl;
+        cout << "Please provide an input file." << endl;
+        return 1;
     }
 
     ifstream fin(inputFileName);
@@ -32,6 +35,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Prepare output file name based on input name
     string outputFileName = inputFileName.substr(0, inputFileName.find_last_of('.')) + "_output.txt";
     ofstream fout(outputFileName);
 
@@ -52,8 +56,10 @@ int main(int argc, char* argv[]) {
     int n = A.size();
     int m = B.size();
     
-    cout << "String A: " << A << ", String B: " << B << endl;
+    cout << "String A: " << A << endl;
+    cout << "String B: " << B << endl;
 
+    // 1. Build the DP Table
     vector<vector<int>> memo(n + 1, vector<int>(m + 1, 0));
 
     for (int i = 1; i <= n; i++) {
@@ -66,8 +72,33 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    // 2. Backtracking to find the optimal subsequence
+    string lcs = "";
+    int i = n, j = m;
+    while (i > 0 && j > 0) {
+        // If characters match, they are part of the optimal sequence
+        if (A[i - 1] == B[j - 1]) {
+            lcs += A[i - 1];
+            i--;
+            j--;
+        } 
+        // Otherwise, move in the direction of the higher value
+        else if (memo[i - 1][j] > memo[i][j - 1]) {
+            i--;
+        } else {
+            j--;
+        }
+    }
+    // The string was built backwards, so reverse it
+    reverse(lcs.begin(), lcs.end());
+
+    // 3. Output Results
     fout << memo[n][m] << endl;
+    fout << lcs << endl;
+
     cout << "Highest Value: " << memo[n][m] << endl;
+    cout << "Optimal Subsequence: " << lcs << endl;
+    cout << "Results saved to: " << outputFileName << endl;
 
     fin.close();
     fout.close();
