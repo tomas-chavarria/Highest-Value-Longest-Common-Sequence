@@ -7,15 +7,38 @@
 
 using namespace std;
 
-int main() {
-    ifstream fin("input.txt");
-    ofstream fout("output.txt");
+// argc is the number of arguments, argv is an array of strings
+int main(int argc, char* argv[]) {
+    // Default filename if no argument is provided
+    string inputFileName = "../run-io/input.txt";
+
+    // Check if a filename was passed as an argument
+    if (argc > 1) {
+        if (string(argv[1]).substr(0, 10) != "../run-io/") {
+            cout << "Please place file [" << string(argv[1]) << "] in the run-io folder and re-run." << endl;
+            return 1;
+        } else {
+            inputFileName = "../run-io/" + string(argv[1]);
+        }
+        
+        cout << "Using input file: " << inputFileName << endl;
+    } else {
+        cout << "No file specified. Defaulting to input.txt" << endl;
+    }
+
+    ifstream fin(inputFileName);
+    if (!fin.is_open()) {
+        cerr << "Error: Could not open file " << inputFileName << endl;
+        return 1;
+    }
+
+    string outputFileName = inputFileName.substr(0, inputFileName.find_last_of('.')) + "_output.txt";
+    ofstream fout(outputFileName);
 
     int K;
-    fin >> K;
+    if (!(fin >> K)) return 0;
 
     unordered_map<char, int> value;
-
     for (int i = 0; i < K; i++) {
         char c;
         int val;
@@ -28,8 +51,9 @@ int main() {
 
     int n = A.size();
     int m = B.size();
+    
+    cout << "String A: " << A << ", String B: " << B << endl;
 
-    // memo table
     vector<vector<int>> memo(n + 1, vector<int>(m + 1, 0));
 
     for (int i = 1; i <= n; i++) {
@@ -42,8 +66,8 @@ int main() {
         }
     }
 
-    // Output only the maximum valalue
     fout << memo[n][m] << endl;
+    cout << "Highest Value: " << memo[n][m] << endl;
 
     fin.close();
     fout.close();

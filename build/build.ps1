@@ -1,12 +1,11 @@
 $SOURCE = "../src/longest-common-subsequence.cpp"
-$OUTPUT = "hvlcs.exe"
+$OUTPUT = "../bin/hvlcs.exe"
 
 Write-Host "Compiling $SOURCE..."
-
 g++ -std=c++17 -Wall -Wextra -O2 $SOURCE -o $OUTPUT
 
 if ($LASTEXITCODE -eq 0) {
-Write-Host "Compilation successful. Executable: $OUTPUT"
+    Write-Host "Compilation successful."
 } else {
-Write-Host "Compilation failed."
+    Write-Host "Compilation failed."
 }

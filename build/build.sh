@@ -1,11 +1,14 @@
-#!/usr/bin/env bash
-set -e
+#!/bin/bash
 
-SOURCE="main.cpp"
-OUTPUT="hvlcs"
+SOURCE="../src/longest-common-subsequence.cpp"
+OUTPUT="../bin/hvlcs.exe"
 
 echo "Compiling $SOURCE..."
-
 g++ -std=c++17 -Wall -Wextra -O2 "$SOURCE" -o "$OUTPUT"
 
-echo "Compilation successful. Executable: $OUTPUT"
+# $? captures the exit status of the previous command
+if [ $? -eq 0 ]; then
+    echo "Compilation successful."
+else
+    echo "Compilation failed."
+fi
